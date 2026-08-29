@@ -1,0 +1,1 @@
+url-to-app: Turn any dashboard URL into a production React+Vite app — tokens from CSS, shadcn primitives, parallel dispatch, verified build.

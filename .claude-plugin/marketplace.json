@@ -1,0 +1,14 @@
+{
+  "name": "url-to-app",
+  "description": "URL to App — turn any dashboard URL into a production React+Vite app (tokens from CSS, component library, parallel pages, verified build)",
+  "owner": { "name": "javidrazack", "email": "javid.razak@gmail.com" },
+  "plugins": [
+    {
+      "name": "url-to-app",
+      "description": "Build a production React+Vite app from any URL reference — tokens from CSS, shadcn primitives, parallel dispatch, verified build",
+      "version": "1.0.0",
+      "source": "./",
+      "skills": ["./skills/url-to-app"]
+    }
+  ]
+}
