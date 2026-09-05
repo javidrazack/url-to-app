@@ -10,6 +10,8 @@ The bundled UI audit records limited navigation/FCP/resource observations alongs
 
 ## Choose fixes from evidence
 
+For React apps, use [react-quality.md](react-quality.md) to prioritize dependency chains and initial loading before request reuse, state ownership, and measured render cost. Apply server/Next-specific techniques only to the corresponding runtime. Reuse measurements and checks already taken against the unchanged build; two playbooks do not require two identical audit runs.
+
 | Symptom | Inspect | Candidate fix |
 |---|---|---|
 | Slow first useful content | Critical request chain, initial route/shared JS, font/image loading | Defer unrelated routes/widgets; size critical images correctly; load only needed font files; remove unused dependencies |

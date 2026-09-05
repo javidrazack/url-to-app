@@ -10,6 +10,7 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { validateLayoutChecks } from './layout-checks.mjs'
 
 function routeUrl(path, base) {
   if (typeof path !== 'string' || !path.startsWith('/') || path.startsWith('//')) {
@@ -32,7 +33,7 @@ export function validateManifest(input, baseUrl, width = 1440, height = 900) {
   const seen = new Set()
   const routes = input.map((entry, index) => {
     if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error(`Invalid route entry ${index}.`)
-    const allowed = ['path', 'selector', 'text', 'expectedPath', 'status', 'timeoutMs', 'errorSelector']
+    const allowed = ['path', 'selector', 'text', 'expectedPath', 'status', 'timeoutMs', 'errorSelector', 'layoutChecks']
     for (const key of Object.keys(entry)) {
       if (!allowed.includes(key)) throw new Error(`Unknown field ${key} in entry ${index}.`)
     }
@@ -49,7 +50,8 @@ export function validateManifest(input, baseUrl, width = 1440, height = 900) {
     const timeoutMs = entry.timeoutMs ?? 15000
     if (!Number.isInteger(status) || status < 200 || status > 599) throw new Error(`${entry.path}: invalid status.`)
     if (!Number.isInteger(timeoutMs) || timeoutMs < 1) throw new Error(`${entry.path}: invalid timeoutMs.`)
-    return { ...entry, url, expectedUrl: routeUrl(entry.expectedPath ?? entry.path, base), status, timeoutMs }
+    const layoutChecks = validateLayoutChecks(entry.layoutChecks)
+    return { ...entry, layoutChecks, url, expectedUrl: routeUrl(entry.expectedPath ?? entry.path, base), status, timeoutMs }
   })
   return { routes, viewport: { width, height } }
 }

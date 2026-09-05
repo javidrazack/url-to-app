@@ -38,6 +38,9 @@ test('real browser audit catches UI defects and preserves readable capture evide
       '/broken-image': accessible('<img src="/missing.png" alt="Order package" width="100" height="100">'),
       '/motion-bug': accessible('<style>@media(prefers-reduced-motion:reduce){#ready{display:none}}</style><p>Content should stay available.</p>'),
       '/missing-route': accessible('').replace('id="ready"', 'id="shell-title"'),
+      '/layout-bug': accessible('<style>.fields{display:flex;gap:12px}.fields input{height:44px;width:110px}#company{margin-top:6px}</style><div class="fields"><label>Name<input id="name"></label><label>Company<input id="company"></label></div>'),
+      '/scroll': accessible('<div style="overflow-x:auto" tabindex="0" role="region" aria-label="Order data"><div style="width:1800px">Order amounts and status</div></div>'),
+      '/anchor': accessible('<div style="height:1500px"></div><h2 id="section">Order history</h2><div style="height:1000px"></div>'),
     }
     res.setHeader('Content-Type', 'text/html')
     res.end(pages[path] || accessible('<p>Unknown fixture</p>'))
@@ -68,6 +71,20 @@ test('real browser audit catches UI defects and preserves readable capture evide
   const saved = JSON.parse(await readFile(report.reportPath, 'utf8'))
   assert.equal(saved.results.length, report.results.length)
   assert.ok(saved.limitations.length > 0)
+
+  const geometry = await runAudit(browser, { baseUrl, outputDir: dir, AxeBuilder, profiles: [PROFILES[1]], manifest: [
+    { ...entry('/layout-bug'), layoutChecks: [{ name: 'field edges', type: 'align', edge: 'top', selectors: ['#name', '#company'] }] },
+    entry('/scroll'), { path: '/anchor#section', selector: '#section', text: 'Order history' },
+  ] })
+  assert.equal(geometry.results[0].ok, false)
+  assert.ok(geometry.results[0].inspection.blockers.includes('layout: field edges'))
+  assert.equal(geometry.results[0].inspection.layoutChecks[0].spreadPx, 6)
+  assert.equal(geometry.results[1].ok, true, JSON.stringify(geometry.results[1]))
+  assert.equal(geometry.results[1].inspection.measurements.horizontalScrollers.length, 1)
+  assert.ok(geometry.results[1].inspection.warnings.some(w => w.includes('Contained horizontal')))
+  assert.equal(geometry.results[2].ok, true, JSON.stringify(geometry.results[2]))
+  assert.equal(geometry.results[2].inspection.capture.normalizedScroll, true)
+  assert.ok(geometry.results[2].inspection.capture.originalScroll.y > 500)
 
   const input = join(dir, 'routes.json')
   const cli = fileURLToPath(new URL('./ui-audit.mjs', import.meta.url))

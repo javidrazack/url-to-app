@@ -35,8 +35,14 @@ Put it in DESIGN.md alongside researched tokens, before implementing the first r
 
 Do not replace reference identity with a preferred preset, ban its chosen font/color/icon library, or redesign its navigation for novelty. If the reference contains a usability defect, preserve its character while correcting the defect and recording the change. If the user explicitly requests an exact copy, keep the fidelity target and report any necessary accessibility/behavior tradeoff.
 
+## Resolve design questions with focused evidence
+
+For an uncertain pattern, name the question before searching: for example, how a dense action toolbar should reflow while preserving its primary action. Inspect the supplied reference's relevant state, nearby routes and existing project components first. Use a small additional reference only if it answers that question; match task and information density, not just color or trend. Record what was observed, what is inferred, and which implementation decision the evidence changes. Stop gathering inspiration when the decision is supported.
+
+External reference libraries, hosted design tools, packs and assets are optional. The default workflow works from the supplied URL and bundled guidance. Missing paid access must not stall it or be concealed when it limits evidence. Preserve the local design system and licensed asset boundaries; do not merge unrelated visual styles into a collage or replace DESIGN.md merely because a source proposes its own authority.
+
 ## Prove the direction with one working slice
 
-Build shell + the main route + one important interaction, including mobile layout and relevant loading/empty/error states. Capture desktop and mobile, inspect the images, and walk the interaction before propagating patterns to every page. Fix systematic problems in tokens/shared components now. This is an agent quality gate, not a mandatory user approval checkpoint.
+Build shell + the main route + one important interaction, including relevant loading/empty/error states. Also exercise the highest-risk shared composition: related form fields, a cramped action group, a dense table, or an overlay as appropriate. Capture phone, intermediate and desktop layouts, inspect the images, and walk the interaction before propagating patterns to every page. Use [layout-contracts.md](layout-contracts.md) for applicable relationships between controls. Fix systematic problems in tokens/shared components now. This is an agent quality gate, not a mandatory user approval checkpoint.
 
 When delegating, pass the design contract, reference captures, validated slice, and shared APIs to every agent. Do not let each page invent its own visual language.

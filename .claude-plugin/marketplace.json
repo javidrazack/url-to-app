@@ -6,7 +6,7 @@
     {
       "name": "url-to-app",
       "description": "Build and refine a working app from a reference URL with built-in design direction, visual craft, interaction hardening, optimization, and UI verification",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "source": "./",
       "skills": ["./skills/url-to-app"]
     }

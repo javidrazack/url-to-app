@@ -40,7 +40,7 @@ The agent infers ordinary choices instead of interviewing the user about fonts, 
 ## The built-in flow
 
 1. **Research and design direction.** Inspect rendered navigation, tokens, screenshots, content, and interactions. Preserve the reference's identity and record the scope and core journey.
-2. **One working slice.** Build the shell, main page, and one important interaction. View desktop/mobile captures and refine the shared design before expanding it.
+2. **One working slice.** Build the shell, main page, and one important interaction, including the riskiest shared composition. View phone/intermediate/desktop captures and refine the shared design before expanding it.
 3. **Complete the app.** Implement in-scope pages and observable outcomes, with shared components and a coherent data adapter. Keep track of every route and unfinished service integration.
 4. **Critique and refinement.** Review composition, hierarchy, type, density, imagery, copy, state coverage, and consistency against the reference.
 5. **Hardening and optimization.** Check real inputs, recovery paths, keyboard/focus, responsive behavior, and reduced motion. Measure and fix actual loading/interaction bottlenecks.
@@ -59,8 +59,14 @@ Dense dashboards use predictable, efficient product UI. Marketing and portfolio 
 | Performance refinement | `optimize.md`: measured bottlenecks, asset/loading strategy, render cost, motion, layout stability, and revalidation |
 | Critique and polish | `design-review.md`: required rendered comparison, prioritized fixes, concrete evidence, and visual sign-off |
 | Automated UI evidence | `ui-audit.mjs`: route readiness, axe checks, overflow, broken images, viewport screenshots, and limited navigation observations |
+| Composed layout checks | `layout-contracts.md` and `layout-checks.mjs`: declared alignment, control-size and short-label checks, viewport applicability, and review prompts for contained scrolling |
+| React implementation review | `react-quality.md`: dependency chains and initial loading first, then data reuse/state ownership and measured rendering costs; runtime-specific techniques stay scoped |
 
 These are adapted, self-contained playbooks with original audit tooling, **not the full Impeccable or Taste products**. Their live editors, hooks, native platform workflows, and detectors are not vendored. Source revisions, adaptations, and licenses are recorded in [NOTICE.md](skills/url-to-app/NOTICE.md).
+
+The workflow also incorporates an independent methodology review of UIZZE anti-ui-slop and Vercel React Best Practices: focused evidence for a specific product decision, plus performance work ordered by impact. Their hosted services, reference libraries and rule corpora are not bundled. No UIZZE account, paid reference pack, extra skill, or specific query/router library is required.
+
+For a new workspace the base remains React + Vite + strict TypeScript + Tailwind. Explicit stack choices and existing project conventions take precedence. Add a router/data library when the app needs one; do not change frameworks to compensate for missing visual review.
 
 ## Quality and scope
 
@@ -105,6 +111,8 @@ Choose selectors for **completed route content**, not the shell or loading fallb
 node <skill-path>/scripts/route-sweep.mjs http://127.0.0.1:4173 qa/routes.json
 ```
 
+Optional `layoutChecks` on route entries declare intended alignments, equal control dimensions or single-line action labels. See [layout-contracts.md](skills/url-to-app/references/layout-contracts.md) for the schema and examples. The agent creates applicable assertions from the design contract. The UI audit executes them and fails on violations; the focused route sweep only validates their configuration. Existing manifests work unchanged. Out-of-range width rules are reported as not applicable, and contained scrollers prompt manual review rather than automatically failing.
+
 Both CLIs use exit `0` for passing machine checks, `1` for failures, and `2` for invalid input/setup failure. UI audit success still requires manual review of visual quality, keyboard behavior, axe `incomplete` findings, hidden states, and actual motion. Its unthrottled navigation observations are not field Core Web Vitals or INP.
 
 ## Development checks
@@ -112,10 +120,12 @@ Both CLIs use exit `0` for passing machine checks, `1` for failures, and `2` for
 From a working directory with Playwright and axe installed, with Chromium available:
 
 ```bash
-node --test <skill-path>/scripts/route-sweep.test.mjs <skill-path>/scripts/ui-audit.test.mjs
+node --test <skill-path>/scripts/route-sweep.test.mjs <skill-path>/scripts/layout-checks.test.mjs <skill-path>/scripts/ui-audit.test.mjs
 ```
 
 The regression suites use local fixtures to exercise route and UI failure detection. [Evaluation scenarios](evals/scenarios.json) describe broader reference-to-app behavior to test independently; they are not a claim that a full model benchmark has been run.
+
+The [v2.2.0 focused refinement evaluation](evals/results/v2.2.0.md) compares one candidate run against v2.1.0 on the same existing app. It records the narrow observed improvement, baseline advantages, execution times and limits; it is not a general fresh-build benchmark.
 
 ## License
 

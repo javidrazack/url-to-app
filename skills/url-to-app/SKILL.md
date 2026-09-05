@@ -25,7 +25,7 @@ Read [references/research.md](references/research.md) and [references/design-dir
 
 For a new Vite app, read [references/foundation.md](references/foundation.md); adapt to the existing framework otherwise. Get typecheck, lint, and starter build passing.
 
-Before editing UI, read [references/visual-craft.md](references/visual-craft.md) and [references/interaction-quality.md](references/interaction-quality.md). Build the shell, main route, and one important interaction with relevant loading/empty/error states. Use shared tokens and accessible primitives. Capture and **view** desktop/mobile images, walk the interaction, and fix hierarchy, identity, typography, density, and responsive issues before copying the pattern across the app. This is an agent check, not a user approval checkpoint.
+Before editing UI, read [references/visual-craft.md](references/visual-craft.md) and [references/interaction-quality.md](references/interaction-quality.md); for React data/component work also use [references/react-quality.md](references/react-quality.md). Build the shell, main route, and one important interaction with relevant loading/empty/error states. Include the riskiest shared composition (such as a form row and a heading/action group), not only the main page's happy state. Use shared tokens and accessible primitives. Capture and **view** phone, intermediate, and desktop images, walk the interaction, and fix hierarchy, identity, typography, density, and responsive issues before copying the pattern across the app. This is an agent check, not a user approval checkpoint.
 
 ### 3. Build the complete scoped app
 
@@ -37,7 +37,7 @@ When useful and authorized, delegate independent pages using [references/paralle
 
 ### 4. Critique and refine the complete experience
 
-Read [references/design-review.md](references/design-review.md). Inspect actual renders and the main user journey. Compare with the reference, fix concrete weaknesses in composition, type, spacing, assets, copy, state coverage, and shared-system consistency, and preserve intentional identity. Apply the same standard to every distinct page pattern, supported theme, and key overlay. Fix shared causes before local symptoms.
+Read [references/design-review.md](references/design-review.md). Inspect actual renders and the main user journey. Compare with the reference, fix concrete weaknesses in composition, type, spacing, assets, copy, state coverage, and shared-system consistency, and preserve intentional identity. Apply the same standard to every distinct page pattern, supported theme, and key overlay. Use [references/layout-contracts.md](references/layout-contracts.md) to inspect composed controls and declare applicable alignment, size, and short-label assertions in the route manifest. Fix shared causes before local symptoms; a known layout defect is not optional decoration.
 
 ### 5. Harden and optimize
 

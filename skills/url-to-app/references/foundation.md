@@ -14,12 +14,14 @@ npm view create-vite version
 npm create vite@<resolved-version> <root> -- --template react-ts
 cd <root>
 npm install
-npm install --save-exact react-router class-variance-authority clsx tailwind-merge lucide-react
+npm install --save-exact class-variance-authority clsx tailwind-merge lucide-react
 npm install -D --save-exact tailwindcss @tailwindcss/vite playwright @axe-core/playwright
 npm pkg set 'scripts.dev=vite' 'scripts.typecheck=tsc -b' 'scripts.build=npm run typecheck && vite build' 'scripts.preview=vite preview'
 ```
 
 Keep `package-lock.json`, use `npm ci` for reproduction, and record resolved versions (`npm ls --depth=0`) after validation. The scaffold's existing dependency ranges are resolved by the lockfile; do not claim a fixed compatible stack before testing it. Add charts, Radix packages, fonts, and feature dependencies only as their consumers are implemented, resolving peer conflicts instead of suppressing them. Install Chromium with `npx playwright install chromium` before browser checks.
+
+Install one router only when navigation needs it. For the default multi-page recipe, use `npm install --save-exact react-router`; respect a requested/existing router instead. TanStack Router can serve complex typed navigation/search requirements, and a shared query library can serve substantial API data, as described in [react-quality.md](react-quality.md). Do not install competing routers, add server infrastructure to a client demo, or replace the user's stack merely to follow a recipe. Single-page/anchor-only sites may not need a router at all.
 
 ## Configure the starter
 

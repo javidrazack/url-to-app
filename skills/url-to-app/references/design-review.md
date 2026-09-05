@@ -8,6 +8,8 @@ Open the final production app. Compare its screenshots with the reference at mat
 
 Run the bundled browser audit in verification.md, but treat machine checks and visual judgment separately. Neither a regex detector nor an axe pass can certify “taste.” If visual inspection cannot run, record the gap and do not claim the visual quality gate passed.
 
+Use [layout-contracts.md](layout-contracts.md) to review the joins between shared components: field control edges/heights, helper/error spacing, heading/action groups, and access to overflowed content. Check intermediate widths and the boundaries of layout changes. A familiar reference may contain defects: record which details preserve identity and which need repair. Do not accept a misaligned row just because each input looks reasonable on its own.
+
 ## Review dimensions with explicit evidence
 
 Use pass / needs-fix / unverified for each dimension; do not hide failures behind an averaged score.
@@ -34,6 +36,8 @@ Ask yourself: if the logo were removed, would the app still resemble this specif
 
 Fix shared causes before per-page symptoms. Batch issues, rebuild, recapture affected routes/states, and compare again. Recheck all pages when shared shell/tokens/routing change. Stop discretionary experimentation once the design contract is met, but continue resolving known required defects or name a concrete blocker. Never announce “production-grade” merely because two passes elapsed.
 
+The priority order schedules fixes; it does not excuse remaining known alignment, label-wrapping or clipping defects. Maintain a short issue ledger with observation → shared cause → correction → recheck. Prefer a second independent visual reviewer when available and authorized, without sharing desired scores; otherwise separate the critique from implementation and inspect the captures afresh. A reviewer may find a tie, and one screenshot comparison does not establish a general quality win.
+
 ## Evidence report and handoff
 
 Write `qa/quality-report.md` with:
@@ -41,6 +45,7 @@ Write `qa/quality-report.md` with:
 - Final source revision or working-tree identification and build time; actual route/state coverage.
 - Reference captures and final captures by route/viewport/theme; which images were visually inspected.
 - Each dimension above, status, specific observations, changes made, and confirmation evidence.
+- Declared layout contracts, widths/states exercised, failed/not-applicable checks, overflow affordance review, and closure evidence for observed defects.
 - Interaction checks with outcome, accessibility findings/manual review, performance conditions/results, and service/browser coverage gaps.
 - Outstanding defects and exact mock/external-service boundaries.
 

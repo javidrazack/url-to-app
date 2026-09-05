@@ -24,6 +24,8 @@ Keep `qa/journeys.md` and `qa/quality-report.md` alongside project documentation
 
 Generated AGENTS.md should explain the bundled workflow's expectations, document portable project-local QA commands, and tell future contributors to rerun affected checks after UI changes. Do not hardcode the original author's absolute installed-skill path; copy needed QA scripts into the generated project's QA tooling with their applicable license when portability is needed, and install their dependencies in that project.
 
+The browser tools import sibling modules: copy `route-sweep.mjs`, `ui-audit.mjs`, and `layout-checks.mjs` together, plus the original license. Keep `qa/routes.json` and its layout intent with the project. Record applicable React performance categories and reuse the final-build evidence rather than duplicating audit runs for each document.
+
 ## Scope and branding check
 
 Compare the result with the agreed branding and content policy. A generic starter should have neutral branding and fictional data; a branded build should retain the requested identity. Search only for known accidental placeholders or unrelated names within the generated project—do not mine other projects for a blacklist or remove ordinary domain vocabulary indiscriminately.

@@ -11,6 +11,7 @@ import { createRequire } from 'node:module'
 import { resolve, join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { validateManifest, sweep } from './route-sweep.mjs'
+import { inspectLayoutChecks } from './layout-checks.mjs'
 
 export const PROFILES = [
   { name: 'mobile', width: 390, height: 844, reducedMotion: 'no-preference' },
@@ -19,7 +20,7 @@ export const PROFILES = [
   { name: 'mobile-reduced-motion', width: 390, height: 844, reducedMotion: 'reduce' },
 ]
 
-export async function inspectUI(page, { AxeBuilder, screenshotPath, timeoutMs }) {
+export async function inspectUI(page, { AxeBuilder, screenshotPath, timeoutMs, layoutChecks = [] }) {
   const warnings = []
   // Settle currently requested assets with a deadline, not an arbitrary screenshot delay.
   const assets = await page.evaluate(async timeout => {
@@ -46,6 +47,10 @@ export async function inspectUI(page, { AxeBuilder, screenshotPath, timeoutMs })
       return r.width > 0 && r.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
     }
     const nodes = Array.from(document.body.querySelectorAll('*'))
+    const horizontalScrollers = nodes.filter(el => visible(el) && el.clientWidth > 0 &&
+      el.scrollWidth > el.clientWidth + 1 && ['auto', 'scroll'].includes(getComputedStyle(el).overflowX))
+      .slice(0, 12).map(el => ({ tag: el.tagName.toLowerCase(), id: el.id,
+        className: el.getAttribute('class'), clientWidth: el.clientWidth, scrollWidth: el.scrollWidth }))
     const overflow = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) > viewport + 1
     const suspects = overflow ? nodes.filter(el => {
       if (!visible(el)) return false
@@ -60,7 +65,7 @@ export async function inspectUI(page, { AxeBuilder, screenshotPath, timeoutMs })
     const resources = performance.getEntriesByType('resource')
     return {
       viewportWidth: viewport, documentWidth: document.documentElement.scrollWidth,
-      overflow, suspects, brokenImages, pendingLazyImages,
+      overflow, suspects, brokenImages, pendingLazyImages, horizontalScrollers,
       observations: {
         domContentLoadedMs: navigation?.domContentLoadedEventEnd ?? null,
         firstContentfulPaintMs: fcp?.startTime ?? null,
@@ -70,7 +75,17 @@ export async function inspectUI(page, { AxeBuilder, screenshotPath, timeoutMs })
       },
     }
   })
-  await page.screenshot({ path: screenshotPath, fullPage: true, animations: 'disabled', timeout: timeoutMs })
+  const layout = await inspectLayoutChecks(page, layoutChecks)
+  // A scrolled full-page capture can expose fixed elements hidden above the viewport.
+  // Normalize capture position, then restore the state being inspected (e.g. a hash target).
+  const scroll = await page.evaluate(() => ({ x: scrollX, y: scrollY }))
+  try {
+    await page.evaluate(() => scrollTo({ top: 0, left: 0, behavior: 'instant' }))
+    await page.screenshot({ path: screenshotPath, fullPage: true, animations: 'disabled', timeout: timeoutMs })
+  } finally {
+    await page.evaluate(({ x, y }) => scrollTo({ left: x, top: y, behavior: 'instant' }), scroll)
+  }
+  if (measurements.horizontalScrollers.length) warnings.push('Contained horizontal scrolling detected: verify discoverability, touch/keyboard access, and access to all columns; containment alone is not visual approval.')
   if (measurements.pendingLazyImages) warnings.push(`${measurements.pendingLazyImages} lazy image(s) were not loaded; scroll and inspect below-fold content separately.`)
   const summarize = finding => ({
     id: finding.id, impact: finding.impact, help: finding.help, helpUrl: finding.helpUrl,
@@ -83,8 +98,10 @@ export async function inspectUI(page, { AxeBuilder, screenshotPath, timeoutMs })
     ...(measurements.overflow ? ['Document has horizontal overflow.'] : []),
     ...measurements.brokenImages.map(img => `Broken image: ${img.src}`),
     ...(!assets.settled ? ['Capture readiness timed out.'] : []),
+    ...layout.filter(check => check.status === 'fail').map(check => `layout: ${check.name}`),
   ]
-  return { blockers, warnings, violations, incomplete, measurements, screenshot: screenshotPath }
+  return { blockers, warnings, violations, incomplete, measurements, layoutChecks: layout,
+    capture: { mode: 'full-page', normalizedScroll: true, originalScroll: scroll }, screenshot: screenshotPath }
 }
 
 export async function runAudit(browser, { manifest, baseUrl, outputDir, AxeBuilder, storageState, profiles = PROFILES }) {
@@ -106,7 +123,7 @@ export async function runAudit(browser, { manifest, baseUrl, outputDir, AxeBuild
     const routes = await sweep(browser, configs[i], {
       storageState, reducedMotion: profile.reducedMotion,
       inspectPage: (page, route) => inspectUI(page, {
-        AxeBuilder, timeoutMs: route.timeoutMs,
+        AxeBuilder, timeoutMs: route.timeoutMs, layoutChecks: route.layoutChecks,
         screenshotPath: join(directory, `${profile.name}-${String(++index).padStart(3, '0')}.png`),
       }),
     })

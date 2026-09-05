@@ -42,6 +42,7 @@ Create `qa/routes.json`, a nonempty array of objects:
 - `status`: expected final document HTTP status, default 200. Use a different status only for an intentional case such as a tested 404.
 - `timeoutMs`: optional readiness/navigation timeout, default 15000.
 - `errorSelector`: optional CSS selector for error boundaries; default `[data-route-error]`. Mark generated route error boundaries accordingly, or supply their actual selector.
+- `layoutChecks`: optional intent-specific geometry assertions, executed by the UI audit. See [layout-contracts.md](layout-contracts.md) for alignment, size, single-line labels, viewport bounds and selector requirements. Old manifests remain valid.
 
 ```bash
 node <skill-path>/scripts/route-sweep.mjs http://127.0.0.1:4173 qa/routes.json 1440 900
@@ -67,9 +68,11 @@ The UI audit reuses the route checker and its manifest/session configuration. If
 
 It checks axe's available WCAG A/AA rule tags, document overflow, broken loaded image elements, and route readiness/errors. Capture readiness has a deadline; a timeout is a failure. Exit 0 means machine checks passed, 1 means failures, and 2 means setup/input failure. Dependency or browser failure is not a skipped pass. Retain the report and inspect `incomplete` axe findings manually. Do not disable checks merely to obtain a green result.
 
+Declared layout contracts also produce measured pass/fail results; out-of-range viewport rules are `not-applicable`. Review the reported contained scrollers for visible affordances and keyboard/touch access. Scrollers are not automatically wrong, and missing layout declarations are not evidence of geometric correctness. Include applicable contracts for the representative composed patterns identified in the design review.
+
 Add explicit theme query variants to the manifest when the app supports them; the audit does not invent theme controls. For local demo states, provide fixture/query routes whose actual content assertions identify that state. For interactive states such as open dialogs, use journey tests to open the state and capture/check it. Do not claim those are covered by default route scans.
 
-The captures freeze animations for comparison. Inspect motion interactively; the reduced-motion run checks rendering under that preference but cannot prove all motion behavior. Scroll to lazy-loaded or below-fold assets and inspect/capture them separately if the report warns they remain pending. Background images, deliberate contained scrollers, clipping, typography, and composition still need visual review.
+The captures freeze animations and normalize full-page capture scroll position, then restore the original scroll position. Inspect motion interactively; the reduced-motion run checks rendering under that preference but cannot prove all motion behavior. Use viewport captures for open overlays and matching scroll positions for state comparisons. Scroll to lazy-loaded or below-fold assets and inspect/capture them separately if the report warns they remain pending. Background images, deliberate contained scrollers, clipping, typography, and composition still need visual review.
 
 The report includes unthrottled local navigation/FCP/resource observations. These are diagnostic samples, not field Core Web Vitals, INP, or a performance budget pass. Use the built-in optimize playbook to measure actual bottlenecks with appropriate tooling.
 
