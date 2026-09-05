@@ -1,85 +1,97 @@
 # url-to-app
 
-**URL → Working app codebase**
+**One skill. A reference URL. A working app with built-in design refinement.**
 
-Recreate the requested parts of a live website as a working, documented app. Research styles and rendered behavior, preserve the requested scope and stack, build shared components, and verify the final production output.
+Install url-to-app, then supply a reference website. The agent researches its identity and behavior, builds the app, refines the rendered UI, and verifies the final production build. Design direction, visual craft, interaction hardening, performance optimization, and visual critique are included. Users do not need to install Impeccable or Taste separately or know which refinement commands to invoke.
 
-See [`skills/url-to-app/SKILL.md`](skills/url-to-app/SKILL.md) for the workflow and supporting references. Frontend demos and production service integrations are identified separately.
+## Install
 
-[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Agent Skills compatible](https://img.shields.io/badge/Agent%20Skills-compatible-blue)](https://github.com/vercel-labs/agent-skills)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-purple)](#installing)
-
-## Installing
-
-The `npx skills add` CLI scans the `skills/` folder in this repo, so all skills install the same way.
-
-**Install all skills in this repo** (today = 1, future = N):
-```bash
-npx skills add https://github.com/javidrazack/url-to-app
-```
-
-**Install a single skill by its `name:` field** (the `name:` inside `SKILL.md` frontmatter, not the folder):
 ```bash
 npx skills add https://github.com/javidrazack/url-to-app --skill "url-to-app"
 ```
 
-For a manual install, copy the entire `skills/url-to-app/` directory, including its references and scripts.
+Or install through the Claude Code plugin marketplace:
 
-**Claude Code Plugin** (because `.claude-plugin/` is present):
 ```bash
 /plugin marketplace add javidrazack/url-to-app
 /plugin install url-to-app
 ```
 
-### Updating
+Re-run the install command to update the skill and its bundled references/scripts. For a manual installation, copy the **entire** `skills/url-to-app/` folder, including its notices, references, scripts, and license files.
 
-Re-run the install command to update the skill and its bundled references/scripts.
+## Use
 
-## Skills
+With the skill selected, a URL alone is enough:
 
-| Skill (folder) | Install name | Description |
-|---|---|---|
-| `url-to-app` | `url-to-app` | Recreate scoped pages and interactions, with documented production-build verification |
-
-Future variants (e.g., `url-to-app-v1`, `url-to-app-imagegen`) will appear here and install via `--skill`.
-
-## Usage
-
-Share a URL with the app or pages you want built:
-
-```
-Build me this: https://example.com/dashboard/saas
-Turn https://preview.tabler.io/ into a React app — light theme only, start with dashboard + one CRUD list
-My boss sent https://coreui.io/demos/bootstrap/4.2/dark/index.html — needs to look like it but in Next.js, shell + dashboard
+```text
+$url-to-app https://example.com/dashboard
 ```
 
-The skill will:
-1. Establish scope from the request and existing project, asking only material missing questions.
-2. Research rendered navigation, stylesheet tokens, computed styles, page anatomy, and interactions.
-3. Build the foundation and shared components, using the existing stack or a compatible React + Vite starter.
-4. Implement scoped pages, using parallel agents only when authorized and useful.
-5. Measure and optimize, then verify the final production build through preview, route checks, interactions, accessibility, and screenshots.
-6. Document implementation, token provenance, mock/service boundaries, and verification evidence.
-7. Hand off according to the user's repository and delivery instructions.
+You can narrow or override the defaults:
+
+```text
+Build https://example.com/dashboard, but just orders and order details.
+Use this reference for my existing app's settings page. Keep the stack and branding.
+Recreate https://example.com/product with its editorial typography and restrained motion.
+```
+
+The agent infers ordinary choices instead of interviewing the user about fonts, libraries, design dials, or QA commands. It asks only for material missing decisions or access that blocks a real integration. Explicit review/research requests stay reviews; they do not trigger an app build.
+
+## The built-in flow
+
+1. **Research and design direction.** Inspect rendered navigation, tokens, screenshots, content, and interactions. Preserve the reference's identity and record the scope and core journey.
+2. **One working slice.** Build the shell, main page, and one important interaction. View desktop/mobile captures and refine the shared design before expanding it.
+3. **Complete the app.** Implement in-scope pages and observable outcomes, with shared components and a coherent data adapter. Keep track of every route and unfinished service integration.
+4. **Critique and refinement.** Review composition, hierarchy, type, density, imagery, copy, state coverage, and consistency against the reference.
+5. **Hardening and optimization.** Check real inputs, recovery paths, keyboard/focus, responsive behavior, and reduced motion. Measure and fix actual loading/interaction bottlenecks.
+6. **Production verification.** Build and preview the final output; run route/UI audits, test user journeys, inspect screenshots, fix issues, and repeat affected checks.
+7. **Evidence and handoff.** Deliver the app with project docs, journey results, reference/final captures, and a quality report that distinguishes passed, failed, and unverified gates.
+
+Dense dashboards use predictable, efficient product UI. Marketing and portfolio surfaces get reference-led composition and expression. Common fonts, colors, cards, and icons are not banned mechanically; visual decisions must serve the reference and the user's task.
+
+## Included capabilities
+
+| Capability | Included implementation |
+|---|---|
+| Reference-driven direction | `design-direction.md`: infer audience, page type, expression, motion, density, and a compact design contract |
+| Visual craft | `visual-craft.md`: hierarchy, typography, spacing, semantic color, assets, responsive composition, and purposeful motion |
+| Complete interactions | `interaction-quality.md`: observable task results, state/recovery coverage, realistic input, keyboard/focus, and honest data boundaries |
+| Performance refinement | `optimize.md`: measured bottlenecks, asset/loading strategy, render cost, motion, layout stability, and revalidation |
+| Critique and polish | `design-review.md`: required rendered comparison, prioritized fixes, concrete evidence, and visual sign-off |
+| Automated UI evidence | `ui-audit.mjs`: route readiness, axe checks, overflow, broken images, viewport screenshots, and limited navigation observations |
+
+These are adapted, self-contained playbooks with original audit tooling, **not the full Impeccable or Taste products**. Their live editors, hooks, native platform workflows, and detectors are not vendored. Source revisions, adaptations, and licenses are recorded in [NOTICE.md](skills/url-to-app/NOTICE.md).
+
+## Quality and scope
+
+A clean build or scanner cannot certify visual taste. The agent must open the rendered app, view screenshots, compare against the reference, and walk meaningful interactions. It cannot call an unviewed screenshot a passed visual check. Required defects remain open until fixed or clearly blocked.
+
+By default, an app reference includes core navigation and reachable detail/create/edit flows; a landing reference includes that page and required interaction surfaces. User constraints take precedence. Without connected services, the app uses an explicitly labeled local demo adapter with working local behavior. This is not a substitute for production authentication, payments, authorization, or multi-user persistence. Real integrations need their own access and validation.
+
+No prompt guarantees production readiness. This skill makes design and behavior checks required and makes missing evidence visible rather than promising quality from a style preset.
 
 ## Requirements
 
-- A Node runtime supported by the selected scaffolder and dependencies; check their current engine requirements.
-- A browser or suitable fetch tools for reference research.
-- For the bundled checker: Playwright installed in the generated app and its matching Chromium browser.
+- A coding agent with filesystem/build access, browser control, and the ability to view captured images.
+- A Node runtime supported by the selected framework and dependencies.
+- Reference access or supplied captures for inaccessible pages.
+- For bundled checks: Playwright, `@axe-core/playwright`, and matching Chromium in the generated app's development environment. The agent installs these when permitted; no separate design skill is required.
 
-## Route checker
+If a required tool cannot run, the agent completes independent work and reports the gate as unverified instead of claiming a pass.
 
-Run from the generated app directory:
+## Browser checks
+
+From the generated app directory, after building and starting its production preview:
 
 ```bash
-npm install -D --save-exact playwright
+npm install -D --save-exact playwright @axe-core/playwright
 npx playwright install chromium
-node <skill-path>/scripts/route-sweep.mjs http://127.0.0.1:4173 qa/routes.json
+node <skill-path>/scripts/ui-audit.mjs http://127.0.0.1:4173 qa/routes.json qa/ui
 ```
 
-Serve the final production build first. The checker now requires a nonempty JSON manifest, replacing the old comma-separated route argument:
+The UI audit checks each manifest route at mobile, intermediate, and desktop widths, plus a reduced-motion mobile profile. It creates a unique evidence directory containing `report.json` and PNG captures. It reuses the route checker, so a duplicate full route sweep is unnecessary.
+
+The manifest introduced in v2.0.0 remains compatible:
 
 ```json
 [
@@ -87,20 +99,24 @@ Serve the final production build first. The checker now requires a nonempty JSON
 ]
 ```
 
-Choose a selector for completed route content, not the shared shell or loading fallback. See [verification.md](skills/url-to-app/references/verification.md) for redirects, authenticated sessions, status expectations, and limitations.
-
-Exit codes: `0` means every check passed; `1` means route failures; `2` means invalid input or setup failure. Route smoke checks supplement interaction and visual verification.
-
-To run the checker regression suite, use a working directory with Playwright installed and Chromium available:
+Choose selectors for **completed route content**, not the shell or loading fallback. See [verification.md](skills/url-to-app/references/verification.md) for themes, redirects, authenticated sessions, state coverage, and limitations. For a focused route-only check:
 
 ```bash
-node --test <skill-path>/scripts/route-sweep.test.mjs
+node <skill-path>/scripts/route-sweep.mjs http://127.0.0.1:4173 qa/routes.json
 ```
 
-## Research
+Both CLIs use exit `0` for passing machine checks, `1` for failures, and `2` for invalid input/setup failure. UI audit success still requires manual review of visual quality, keyboard behavior, axe `incomplete` findings, hidden states, and actual motion. Its unthrottled navigation observations are not field Core Web Vitals or INP.
 
-Background writing that shaped this skill lives in `skills/url-to-app/references/`.
+## Development checks
+
+From a working directory with Playwright and axe installed, with Chromium available:
+
+```bash
+node --test <skill-path>/scripts/route-sweep.test.mjs <skill-path>/scripts/ui-audit.test.mjs
+```
+
+The regression suites use local fixtures to exercise route and UI failure detection. [Evaluation scenarios](evals/scenarios.json) describe broader reference-to-app behavior to test independently; they are not a claim that a full model benchmark has been run.
 
 ## License
 
-[MIT](LICENSE) · Copyright (c) 2026 javidrazack
+Original url-to-app code and instructions: [MIT](LICENSE), Copyright (c) 2026 javidrazack. Selected design guidance is adapted from [Impeccable](https://github.com/pbakaus/impeccable) (Apache-2.0) and [Taste Skill](https://github.com/Leonxlnx/taste-skill) (MIT); their notices and licenses ship with the skill. See the [attribution and adaptation record](skills/url-to-app/NOTICE.md).

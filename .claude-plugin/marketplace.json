@@ -1,12 +1,12 @@
 {
   "name": "url-to-app",
-  "description": "URL to App — recreate scoped pages from a live reference as a working, documented app",
+  "description": "URL to App — reference-driven app building with self-contained design refinement and production-build verification",
   "owner": { "name": "javidrazack", "email": "javid.razak@gmail.com" },
   "plugins": [
     {
       "name": "url-to-app",
-      "description": "Recreate scoped pages and interactions from a live URL, with shared components and final production-build verification",
-      "version": "2.0.0",
+      "description": "Build and refine a working app from a reference URL with built-in design direction, visual craft, interaction hardening, optimization, and UI verification",
+      "version": "2.1.0",
       "source": "./",
       "skills": ["./skills/url-to-app"]
     }

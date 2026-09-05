@@ -18,6 +18,12 @@ Report tested runtime/dependency versions, route coverage, final verification re
 
 Record semantic color/typography/spacing/radius/component tokens with reference sources, theme/selector context, and any approximations. If using machine-readable YAML frontmatter, keep a consistent schema and make references resolvable. Explain layout, hierarchy, responsive behavior, interaction states, and intentional differences from the reference. Avoid duplicate numeric sources of truth.
 
+## Quality evidence
+
+Keep `qa/journeys.md` and `qa/quality-report.md` alongside project documentation. Follow [design-review.md](design-review.md) for evidence fields and dimension statuses. Link the latest UI audit report and reference/final screenshots actually inspected, identify the final source/build, and distinguish passed checks from unverified coverage. Keep screenshots and reports free of private data before committing or sharing.
+
+Generated AGENTS.md should explain the bundled workflow's expectations, document portable project-local QA commands, and tell future contributors to rerun affected checks after UI changes. Do not hardcode the original author's absolute installed-skill path; copy needed QA scripts into the generated project's QA tooling with their applicable license when portability is needed, and install their dependencies in that project.
+
 ## Scope and branding check
 
 Compare the result with the agreed branding and content policy. A generic starter should have neutral branding and fictional data; a branded build should retain the requested identity. Search only for known accidental placeholders or unrelated names within the generated project—do not mine other projects for a blacklist or remove ordinary domain vocabulary indiscriminately.

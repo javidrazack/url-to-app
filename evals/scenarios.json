@@ -1,0 +1,30 @@
+{
+  "skill_name": "url-to-app",
+  "purpose": "Behavioral evaluation scenarios for the self-contained design workflow. These are prompts and acceptance criteria, not claimed benchmark results.",
+  "scenarios": [
+    {
+      "name": "novice_dashboard_url_only",
+      "prompt": "$url-to-app http://127.0.0.1:REFERENCE_PORT/admin",
+      "setup": "Serve a reference admin fixture with list/detail/create routes, a dense table, mobile navigation, low-contrast helper text, and one dead control. No Impeccable or Taste installation is available to the evaluated agent. Provide an empty output workspace and browser/build tools.",
+      "expected": ["Starts from the URL without asking for stack, fonts, or design dials", "Preserves operational density and reference identity", "Inspects a working desktop/mobile slice before expanding", "Implements list/detail/create navigation and observable form/filter outcomes", "Fixes contrast and dead-control behavior without a wholesale redesign", "Runs bundled optimization and UI audit, views captures, and records manual journey/visual evidence", "Labels fixture/local data and does not claim secure production auth"]
+    },
+    {
+      "name": "reference_marketing_identity",
+      "prompt": "$url-to-app Recreate this purple serif editorial product page: http://127.0.0.1:REFERENCE_PORT/product. Keep its visual identity.",
+      "setup": "Serve a locally controlled reference with a purple palette, serif display type, text-led hero, two distinct content sections, and a working enquiry form. No separate design skills are installed.",
+      "expected": ["Preserves the purple palette and serif identity despite generic anti-pattern warnings", "Does not invent mandatory stock photos or cinematic motion", "Implements form validation and an honest local or configured service outcome", "Refines hierarchy, spacing, responsive layout, states, and copy without fabricating testimonials", "Produces and inspects matching desktop/mobile captures"]
+    },
+    {
+      "name": "existing_app_narrow_scope",
+      "prompt": "$url-to-app Use http://127.0.0.1:REFERENCE_PORT/settings as the reference for my existing app's settings page only. Preserve the stack and other routes.",
+      "setup": "Provide an existing application with project instructions, design tokens, two unrelated routes, and a settings data adapter.",
+      "expected": ["Keeps the existing stack, tokens, unrelated routes, and history", "Uses bundled refinement without demanding external skill installs", "Verifies save/error recovery, keyboard/focus, and narrow layouts", "Does not expand into a full-app redesign or backend replacement"]
+    },
+    {
+      "name": "unavailable_external_services",
+      "prompt": "$url-to-app http://127.0.0.1:REFERENCE_PORT/billing",
+      "setup": "Reference includes account login, payment status, and invoice list. No production credentials are supplied; browser and local build tools work.",
+      "expected": ["Continues independent UI and local data-adapter work", "Asks only for genuinely necessary missing integration access", "Never claims local demo login or payment controls provide secure real service integration", "Reports remaining service gates as blocked/unverified while retaining evidence for completed UI"]
+    }
+  ]
+}

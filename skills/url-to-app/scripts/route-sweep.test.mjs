@@ -72,6 +72,20 @@ test('browser sweep checks actual route content, navigation and errors', async t
   const redirects = await sweep(browser, validateManifest([entry('/redirect', { expectedPath: '/good' })], base))
   assert.equal(redirects[0].ok, true, JSON.stringify(redirects))
 
+  const disappeared = await sweep(browser, validateManifest([entry('/good')], base), {
+    inspectPage: page => page.evaluate(() => document.querySelector('#ready').remove()),
+  })
+  assert.equal(disappeared[0].ok, false, 'Content disappearing during an inspection must fail.')
+  const lateBoundary = await sweep(browser, validateManifest([entry('/good')], base), {
+    inspectPage: page => page.evaluate(() => {
+      const error = document.createElement('div')
+      error.dataset.routeError = ''
+      error.textContent = 'Late failure'
+      document.body.append(error)
+    }),
+  })
+  assert.equal(lateBoundary[0].ok, false, 'An error boundary appearing during inspection must fail.')
+
   // Exercise CLI dependency resolution from the app cwd and exit/report contracts.
   const dir = await mkdtemp(resolve(tmpdir(), 'route-sweep-test-'))
   t.after(() => rm(dir, { recursive: true, force: true }))

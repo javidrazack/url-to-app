@@ -4,7 +4,7 @@ Use only when delegation is authorized and available, and pages can be developed
 
 ## Ownership and prerequisites
 
-The orchestrator owns the route registry, app wiring, shared primitives, and cross-domain infrastructure. Assign each agent an exclusive file list, including its domain fixtures. Finish the shared APIs and get the foundation checks passing before dispatch.
+The orchestrator owns the route registry, app wiring, shared primitives, and cross-domain infrastructure. Assign each agent an exclusive file list, including its domain fixtures. Finish the shared APIs, get the foundation checks passing, and visually inspect the shell/main-route/interaction slice before dispatch. Give every agent the same DESIGN.md contract, reference captures, and validated slice. Each agent follows visual-craft.md and interaction-quality.md; pages do not choose independent aesthetics.
 
 Keep a small shared conventions brief with the actual stack, token names, component exports/props, import rules, layout ownership, and relevant example files. Pass observed page anatomy and behavior requirements so agents do not guess missing reference details.
 

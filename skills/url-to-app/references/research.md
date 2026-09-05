@@ -30,7 +30,11 @@ Inspect tabs, cards, breadcrumbs, list detail links, and create/edit actions for
 
 Build a route inventory with path, title, discovery source, navigation visibility, page states, implementation scope, and expected readiness content. Reconcile it against the implemented registry before constructing the final checker manifest; otherwise a missed route can disappear from both implementation and tests.
 
-## 4. Record anatomy and behavior
+## 4. Establish design evidence
+
+Use [design-direction.md](design-direction.md) to infer the design register and write the compact contract. Identify distinctive reference details and existing usability defects before choosing patterns. The reference is visual evidence, not just a list of colors. Include a desktop/mobile capture index that can be compared to the implementation, with theme/state/viewport recorded.
+
+## 5. Record anatomy and behavior
 
 For each distinct page pattern, note section order, layout, recurring components, and responsive changes. Inspect representative primary interactions and record their observable outcomes: validation, filtering, sorting, dialog behavior, loading/empty/error states, and persistence expectations. Distinguish visible demo behavior from verified backend integration.
 

@@ -1,57 +1,60 @@
 ---
 name: url-to-app
-description: Recreate a website or app from a live URL as a working codebase, using reference styles, page structure, and interactions. Use when the user asks to build an app from a URL, recreate a dashboard or template, or turn a site into a usable starter. Do not infer a build request from a bare URL without supporting context, or use for a site review or token extraction alone.
+description: Build and refine a complete working app from a reference website URL, with built-in design direction, visual craft, interaction hardening, performance optimization, and rendered UI review. Use for URL-to-app requests, recreating a dashboard/site/template, or a bare reference URL supplied to this skill. Infer sensible defaults and build without requiring design expertise or separately installed design skills. Do not use for explicit review, research, or token-extraction-only requests.
 ---
 
 # URL to App
 
-Turn the requested parts of a live reference into a working, documented app. Match the observed design language and agreed behavior; distinguish a frontend with demo data from a service with production authentication and persistence.
+A reference URL is enough to start. Deliver a working app with the reference's identity, complete in-scope interactions, and a visually reviewed production build. This skill includes adapted Impeccable/Taste design guidance and original browser checks; no separate design skill or optional optimize command is needed. See [NOTICE.md](NOTICE.md) for attribution and the scope of the integration.
 
-## Phase 0 — Establish scope
+## The default experience
 
-Reuse choices already supplied in the conversation and inspect the target workspace before scaffolding. Preserve existing stack, repository conventions, branding, and unrelated changes. In a new project, default to React + Vite + strict TypeScript + Tailwind CSS; choose compatible versions using current official documentation.
+When invoked with only a URL, inspect it, infer the product and design, explain the direction briefly, and proceed. Do not turn the workflow into a stack/theme/font interview or ask the user to invoke refinement commands. Respect explicit requests to inspect rather than build. Reuse supplied choices and existing project conventions; default to React + Vite + strict TypeScript + Tailwind only in a new workspace.
 
-State reasonable assumptions and continue. Batch only missing questions that materially affect implementation: which pages when scope is ambiguous, whether substantial features need real integration, and any required deployment target. A request for one screen stays one screen. For a whole-app recreation, inventory the reference's relevant pages before estimating scope.
+Build the reference's core app navigation and reachable detail/create/edit flows; a landing reference defaults to that page and necessary interaction surfaces. Honor a narrower requested scope. Inventory before implementation and track all remaining routes rather than silently shipping a partial app. Ask only when a missing decision or access blocks meaningful implementation; continue independent work.
 
-- Match the reference's observed themes. Add accent/density controls or other features only when present or requested.
-- Use visible demo content where appropriate to the request. For a generic starter, use neutral branding and fictional data; for an authorized branded build, preserve requested names/assets. Do not import unrelated project context. Inspect reference styles without vendoring proprietary source or assets; use user-provided or appropriately licensed assets when authorized.
-- Treat auth, persistence, maps, editors, and drag-and-drop as behaviors to specify. Installing a UI dependency alone does not implement a real integration. Label mock/stub behavior and any missing service configuration.
-- Use parallel agents only when authorized, available, and useful for independent work; otherwise follow the same phases serially. No user refusal is needed for a solo build.
+Design refinement preserves the reference's character while correcting usability and implementation defects. Do not replace it with a generic preset or apply marketing animation/layout rules to dense operational screens. Preserve requested branding and verified content, use licensed assets, and label illustrative data. A local demo with working behavior is distinct from real server authentication, payments, or shared persistence.
 
-## Phase 1 — Research the reference
+## Required flow
 
-Read [references/research.md](references/research.md). Produce a scoped route inventory, token table with source/theme context, page anatomy notes, and representative desktop/mobile captures. Use rendered navigation and computed styles when static HTML/CSS is incomplete. Mark inaccessible pages and inferred values instead of claiming complete coverage.
+### 1. Discover the product and reference
 
-## Phase 2 — Foundation
+Read [references/research.md](references/research.md) and [references/design-direction.md](references/design-direction.md). Produce the route inventory, token provenance, desktop/mobile reference captures, primary journey, and a compact DESIGN.md contract. Classify each surface as operational, marketing, reading, or gallery and infer its expression, motion, and density. Record unseen pages and uncertain values.
 
-For a new Vite app, read [references/foundation.md](references/foundation.md) for a complete minimal scaffold and semantic token engine. Adapt to the existing stack when present; do not apply Vite routing/build recipes to another framework unchanged. Get the starter's typecheck, lint, and build passing before page construction.
+### 2. Establish the foundation and prove one slice
 
-## Phase 3 — Shared components and shell
+For a new Vite app, read [references/foundation.md](references/foundation.md); adapt to the existing framework otherwise. Get typecheck, lint, and starter build passing.
 
-Build the primitives required by the scoped pages, plus repeated patterns such as PageHeader and DataTable. Keep primitives independent of route data. Use semantic token classes, documented prop APIs, accessible controls, and appropriate loading/empty/error states.
+Before editing UI, read [references/visual-craft.md](references/visual-craft.md) and [references/interaction-quality.md](references/interaction-quality.md). Build the shell, main route, and one important interaction with relevant loading/empty/error states. Use shared tokens and accessible primitives. Capture and **view** desktop/mobile images, walk the interaction, and fix hierarchy, identity, typography, density, and responsive issues before copying the pattern across the app. This is an agent check, not a user approval checkpoint.
 
-For Radix primitives, use namespace imports when accessing `.Root`/`.Trigger` parts. Keep context-dependent parts inside their provider; expose an Avatar `name` convenience prop if useful. Let Dialog/Sheet manage focus and Escape. Verify keyboard operation and focus return in the composed app.
+### 3. Build the complete scoped app
 
-Keep a central route registry with navigation metadata; detail/edit routes need not appear in the sidebar. Derive menus and breadcrumbs from that registry where useful. Establish shared mock/data APIs before building consumers. For a multi-page Vite app, use lazy page imports with stable Suspense fallbacks from the start unless measurements justify another approach.
+Create only the primitives and shared patterns the app needs; document their APIs. Maintain a central route registry including non-navigation detail/edit routes. Keep page data out of primitives, context-dependent parts inside their providers, and focus/overlay handling in proven accessible components. Use lazy page loading for multi-page Vite apps when appropriate.
 
-## Phase 4 — Build the scoped pages
+Complete observable behavior, not clickable facades: navigation, filtering, CRUD, validation, state changes, and meaningful export/download outcomes where present. Use an explicit data adapter, coherent fixtures, and the promised persistence lifetime. Record journey/state coverage in `qa/journeys.md` using interaction-quality.md. Do not substitute success toasts for unimplemented actions or present local demo sessions as secure auth.
 
-Read [references/parallel-dispatch.md](references/parallel-dispatch.md) when delegating. Give agents exclusive file ownership and explicit shared APIs, and have the orchestrator integrate routes. For serial work, keep the same shared contracts without dispatch overhead.
+When useful and authorized, delegate independent pages using [references/parallel-dispatch.md](references/parallel-dispatch.md). Pass the design contract, validated slice, and exclusive ownership; otherwise continue serially. Delegation and extra skills are not prerequisites.
 
-Implement the agreed interactions, not just visible controls. Use representative deterministic fixtures and concrete IDs for detail routes. Record external services or inaccessible reference states that prevent full implementation.
+### 4. Critique and refine the complete experience
 
-## Phase 5 — Optimize, then verify the final app
+Read [references/design-review.md](references/design-review.md). Inspect actual renders and the main user journey. Compare with the reference, fix concrete weaknesses in composition, type, spacing, assets, copy, state coverage, and shared-system consistency, and preserve intentional identity. Apply the same standard to every distinct page pattern, supported theme, and key overlay. Fix shared causes before local symptoms.
 
-Read [references/verification.md](references/verification.md). Measure production output and optimize material bottlenecks before the final gate. Optional installed design/performance skills can help, but basic accessibility and functional checks do not depend on them.
+### 5. Harden and optimize
 
-Final gate: typecheck → lint → production build → preview that build → route sweep → representative interaction and visual checks. The bundled checker takes a JSON manifest with route-specific content expectations; an HTTP 200 or nonempty root is insufficient. Rebuild and repeat affected checks after any later code/configuration changes.
+Finish the relevant edge cases in interaction-quality.md: long/missing data, failed/retried saves, duplicate actions, permissions, mobile navigation, keyboard/focus, reduced motion, and zoom. Missing integrations are explicit blockers, not hidden stubs.
 
-Batch fixes efficiently. Continue until required checks pass or a concrete blocker prevents progress; report blockers and incomplete scope accurately. Limit optional cosmetic refinement, not correction of known defects. Never weaken an assertion just to make a failed check pass.
+Read and run [references/optimize.md](references/optimize.md) for **every build**. Measure the primary and heaviest route/interaction, fix material bottlenecks, and preserve visual quality and behavior. Do not report local navigation samples as field Core Web Vitals.
 
-## Phase 6 — Documentation and handoff
+### 6. Verify the final production build
 
-Read [references/docs.md](references/docs.md). Update existing documentation or create AGENTS.md, README.md, and DESIGN.md at a depth appropriate to the project. Document implemented behavior, mock/stub boundaries, route extension patterns, token sources, commands, and verification results.
+Read [references/verification.md](references/verification.md). Final gate: typecheck → lint → build → production preview → route/UI audit → journey/state checks → actual screenshot comparison and visual sign-off. Run the bundled `ui-audit.mjs` with the route manifest for viewport captures, axe checks, overflow, broken-image detection, and limited performance observations. It reuses the route checker. A standalone `route-sweep.mjs` remains available for focused route checks.
 
-Inspect Git status and repository boundaries before making repository changes. Initialize only a new standalone project when appropriate; preserve existing history and unrelated work. Follow the user's commit/delivery instructions, stage only intended files, and do not treat a successful local build as deployment.
+Use browser/tools already available or install the documented development dependencies in the generated project when permitted; do not require users to install Impeccable/Taste. If a tool cannot run, record the exact unverified gate and complete unaffected work; never silently skip it or claim a pass.
 
-Report completed scope, limitations, final verification evidence, measured bundle output, and documentation locations. Call the result production-ready only when the agreed production integrations and checks support that claim.
+Batch fixes, rebuild, and repeat affected checks. Recheck all routes when shared layout/tokens/routing change. Resolve required failures or report a concrete blocker; limit discretionary redesign once the contract is met. Never weaken checks to hide defects. A nonempty root, clean scanner, screenshot file, or elapsed number of passes does not establish completion.
+
+### 7. Document and hand off
+
+Use [references/docs.md](references/docs.md). Update README.md, AGENTS.md, DESIGN.md, and `qa/quality-report.md` with actual scope, component/data contracts, verified journeys, inspected captures, performance evidence, limitations, and mock/service boundaries. Keep user-facing product copy free of implementation bookkeeping.
+
+Open the finished app when possible. Report the outcome concisely with evidence and any missing service/browser coverage. Call it “verified UI with demo data” when that is what was tested; reserve whole-service production claims for verified integrations and deployment conditions. Preserve existing Git history and unrelated changes, and follow the user's commit/deployment instructions.

@@ -54,14 +54,15 @@ export function validateManifest(input, baseUrl, width = 1440, height = 900) {
   return { routes, viewport: { width, height } }
 }
 
-export async function sweep(browser, config, { storageState } = {}) {
+export async function sweep(browser, config, { storageState, inspectPage, reducedMotion } = {}) {
   const results = []
   for (const route of config.routes) {
     const errors = []
     let context
+    let inspection
     try {
       // A fresh context prevents an earlier route's DOM or session changes masking failures.
-      context = await browser.newContext({ viewport: config.viewport, ...(storageState ? { storageState } : {}) })
+      context = await browser.newContext({ viewport: config.viewport, ...(storageState ? { storageState } : {}), ...(reducedMotion ? { reducedMotion } : {}) })
       const page = await context.newPage()
       page.on('pageerror', error => errors.push(`pageerror: ${error.message}`))
       const critical = request => ['script', 'stylesheet'].includes(request.resourceType()) &&
@@ -87,11 +88,20 @@ export async function sweep(browser, config, { storageState } = {}) {
         const normalize = value => value.replace(/\s+/g, ' ').trim()
         return node && normalize(node.innerText ?? '').includes(normalize(text))
       }, { selector: route.selector, text: route.text }, { timeout: route.timeoutMs })
-      if (await target.count() !== 1 || !await target.isVisible()) throw new Error('Expected exactly one visible content target.')
-      if (page.url() !== route.expectedUrl) throw new Error(`Unexpected final URL: ${page.url()}`)
-      const errorNodes = page.locator(route.errorSelector ?? '[data-route-error]')
-      for (let i = 0; i < await errorNodes.count(); i++) {
-        if (await errorNodes.nth(i).isVisible()) throw new Error('Visible route error state.')
+      const assertReady = async () => {
+        if (await target.count() !== 1 || !await target.isVisible()) throw new Error('Expected exactly one visible content target.')
+        const normalize = value => value.replace(/\s+/g, ' ').trim()
+        if (!normalize(await target.innerText()).includes(normalize(route.text))) throw new Error('Expected route text disappeared.')
+        if (page.url() !== route.expectedUrl) throw new Error(`Unexpected final URL: ${page.url()}`)
+        const errorNodes = page.locator(route.errorSelector ?? '[data-route-error]')
+        for (let i = 0; i < await errorNodes.count(); i++) {
+          if (await errorNodes.nth(i).isVisible()) throw new Error('Visible route error state.')
+        }
+      }
+      await assertReady()
+      if (inspectPage) {
+        inspection = await inspectPage(page, route)
+        await assertReady()
       }
     } catch (error) {
       errors.push(error.message)
@@ -100,7 +110,7 @@ export async function sweep(browser, config, { storageState } = {}) {
         try { await context.close() } catch (error) { errors.push(`cleanup: ${error.message}`) }
       }
     }
-    results.push({ path: route.path, ok: errors.length === 0, errors })
+    results.push({ path: route.path, ok: errors.length === 0, errors, ...(inspection === undefined ? {} : { inspection }) })
   }
   return results
 }

@@ -15,7 +15,7 @@ npm create vite@<resolved-version> <root> -- --template react-ts
 cd <root>
 npm install
 npm install --save-exact react-router class-variance-authority clsx tailwind-merge lucide-react
-npm install -D --save-exact tailwindcss @tailwindcss/vite playwright
+npm install -D --save-exact tailwindcss @tailwindcss/vite playwright @axe-core/playwright
 npm pkg set 'scripts.dev=vite' 'scripts.typecheck=tsc -b' 'scripts.build=npm run typecheck && vite build' 'scripts.preview=vite preview'
 ```
 

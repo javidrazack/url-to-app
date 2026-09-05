@@ -1,1 +1,1 @@
-url-to-app: Recreate scoped pages and interactions from a live URL as a working app, with reference research, shared components, documentation, and final production-build verification.
+url-to-app: A reference URL is enough to build a working app with built-in design direction, visual craft, interaction hardening, optimization, and rendered UI review. No separate Impeccable or Taste skill installation required.
