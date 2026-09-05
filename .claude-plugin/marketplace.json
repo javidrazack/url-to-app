@@ -6,7 +6,7 @@
     {
       "name": "url-to-app",
       "description": "Recreate scoped pages and interactions from a live URL, with shared components and final production-build verification",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "source": "./",
       "skills": ["./skills/url-to-app"]
     }
