@@ -1,63 +1,37 @@
-# Parallel dispatch — building 40+ pages without integration hell
+# Parallel page construction
 
-Sub-agents give 10× throughput on page construction, but only under two rules: every agent gets the **same conventions block**, and every agent owns an **exclusive file list**. Every cross-agent bug in the proven 47-route run traced to a violated ownership boundary.
+Use only when delegation is authorized and available, and pages can be developed independently. Otherwise build serially using the same component and data contracts. Choose batch sizes from actual concurrency limits and task size; do not assume five available agents or a fixed speedup.
 
-## Orchestrator-owned files (agents NEVER edit)
+## Ownership and prerequisites
 
-- `src/App.tsx` — the route table. The orchestrator wires all routes centrally after each batch.
-- `src/routes/nav.ts` — nav config (sidebar, breadcrumbs, titles derive from it).
-- Any mock file another domain owns.
-- Shared infrastructure built before the first batch: mock API factory, DataTable, PageHeader/Field, chart wrappers.
+The orchestrator owns the route registry, app wiring, shared primitives, and cross-domain infrastructure. Assign each agent an exclusive file list, including its domain fixtures. Finish the shared APIs and get the foundation checks passing before dispatch.
 
-Why: agents working in parallel WILL collide on shared files — duplicate route entries, mismatched imports, half-written edits read by another agent's typecheck. Exclusive ownership makes integration deterministic.
+Keep a small shared conventions brief with the actual stack, token names, component exports/props, import rules, layout ownership, and relevant example files. Pass observed page anatomy and behavior requirements so agents do not guess missing reference details.
 
-## Batch plan
+## Example brief
 
-1. **Batch 0 (orchestrator solo)**: foundation, token engine, primitives, nav config, shared infrastructure. Nothing dispatches until `tsc + build` are green here.
-2. **Batches of ~5 agents**: one agent per page, or one per resource (a CRUD resource = list + create + edit + detail + its own mock file, all owned by one agent). Group small related pages (notifications/support/timeline/search) into one agent.
-3. After each batch: orchestrator wires routes, runs the full gauntlet, fixes integration bugs, then dispatches the next batch.
+```text
+PROJECT: <root>, using the existing stack and project instructions.
+TASK: Implement <scoped page/resource> with <observed structure and required interactions>.
 
-## The shared conventions brief
+CONVENTIONS:
+- Use the project's alias/import and semantic token conventions.
+- Shell owns page padding; page content composes the documented shared components.
+- Match observed typography, icons, and labels rather than imposing unrelated style rules.
 
-Start every agent brief with this same block (adjust project-specific tokens):
+READ FIRST: <exact shared API/component files and exemplar page paths>.
+OWNED FILES: <exclusive list>.
+Do not edit shared infrastructure or another agent's files. Send the orchestrator
+any required API change or dependency request.
 
-```
-PROJECT: <root> — Vite + React 19 + TS strict + Tailwind v4 ("<style>" aesthetic).
+VERIFY: Run the project's typecheck and lint on your files. Preserve full diagnostics
+and distinguish errors in your owned files from unrelated in-progress changes.
+Do not hide failures with a keyword filter or claim a clean project-wide pass while
+other changes are incomplete. Run focused behavior checks when useful.
 
-CONVENTIONS (non-negotiable):
-- `@/` imports; `import type` for types; no unused vars/imports (strict noUnusedLocals).
-- Tokens: bg-background, bg-card, text-foreground, text-muted-foreground, border-border,
-  bg-muted, text-primary-strong, bg-primary-fade; status = tint + strong pairs
-  (bg-success-tint text-success-strong); radius rounded-card/card-lg/input; shadows shadow-xs/card/pop.
-- cn() from '@/lib/utils'. Icons: lucide-react strokeWidth={1.8}. NO emoji — initials avatars only.
-- Numbers/money: className "num"/"amount". Labels sentence case; TableHead auto-uppercases.
-- Scaffold: <div className="space-y-5"> → <PageHeader/> from '@/components/app/page-header'.
-  Shell owns page padding — pages render content only.
-- Radix imports are namespace-style: import * as DialogPrimitive from '@radix-ui/react-dialog'.
-
-SHARED INFRA (read these first): <list the exact files: mock/api.ts, data-table.tsx, page-header.tsx, ui/*>
-
-YOUR SCOPE — create EXACTLY these files and nothing else:
-<exclusive file list>
-
-VERIFY: cd <root> && npx tsc --noEmit 2>&1 | grep -iE "<your-keyword>" ; npx eslint <your files>.
-Fix errors in YOUR files only — other agents run in parallel; ignore unrelated errors.
-
-RETURN: created paths + 3-line summary + deviations.
+RETURN: Changed paths, behavior implemented, checks/results, deviations, blockers.
 ```
 
-The `grep` filter on tsc output matters: a full-project typecheck mid-parallel shows other agents' transient errors; agents must not "fix" files they don't own.
+The orchestrator integrates each completed batch, resolves shared-contract issues, and runs full typecheck/lint/build. Retry transient provider errors with a bounded retry policy, then report an unavailable agent or continue locally; do not retry indefinitely or assume a fixed failure rate.
 
-## Brief anatomy that prevents rework
-
-- **Point at shared infra by path** and name the exact exports — agents that guess APIs invent variants (this caused a 19-file Avatar API mismatch in the proven run).
-- **Name the exact files** ("create EXACTLY these files") — prevents agents from "helpfully" wiring routes or editing nav.
-- **Ask for deviations in the return** — agents make judgment calls; surfacing them lets the orchestrator correct systemic drift once instead of 19 times.
-- **Expect ~1 in 3 dispatches to fail on provider/network errors.** Retry failures; batch results as they land rather than synchronizing.
-
-## Central integration checklist (after each batch)
-
-1. Wire routes for the batch's pages (see verification.md for the react-router v7 constraint).
-2. Full gauntlet: `tsc --noEmit` → eslint → build.
-3. Grep new files for convention drift (uppercase labels, raw hex, emoji, non-namespace Radix imports).
-4. Fix systemically: if one agent got an API wrong, assume siblings did too — fix the shared component API rather than 19 call sites when possible (e.g., adding a `name` prop to Avatar instead of editing every usage).
+Adjust shared APIs when that improves the intended contract, not merely to accommodate one agent's mistaken usage. After all batches and optimization, run the final production verification in verification.md; passing intermediate checks is not the final acceptance gate.

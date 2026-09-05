@@ -1,10 +1,10 @@
 # url-to-app
 
-**URL → Production React+Vite App**
+**URL → Working app codebase**
 
-Turn any dashboard URL into a hand-off-ready React project: tokens extracted from the site's *actual* stylesheets (not pixels), a reusable shadcn-style component library, every page in the reference's navigation, docs for humans + agents, and a verified code-split build.
+Recreate the requested parts of a live website as a working, documented app. Research styles and rendered behavior, preserve the requested scope and stack, build shared components, and verify the final production output.
 
-Proven end-to-end on a 47-route admin template — see `skills/url-to-app/SKILL.md` for the full 7-phase workflow.
+See [`skills/url-to-app/SKILL.md`](skills/url-to-app/SKILL.md) for the workflow and supporting references. Frontend demos and production service integrations are identified separately.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Agent Skills compatible](https://img.shields.io/badge/Agent%20Skills-compatible-blue)](https://github.com/vercel-labs/agent-skills)
@@ -24,7 +24,7 @@ npx skills add https://github.com/javidrazack/url-to-app
 npx skills add https://github.com/javidrazack/url-to-app --skill "url-to-app"
 ```
 
-You can also copy `skills/url-to-app/SKILL.md` into your project or paste it into ChatGPT / Codex / Claude conversations.
+For a manual install, copy the entire `skills/url-to-app/` directory, including its references and scripts.
 
 **Claude Code Plugin** (because `.claude-plugin/` is present):
 ```bash
@@ -34,22 +34,19 @@ You can also copy `skills/url-to-app/SKILL.md` into your project or paste it int
 
 ### Updating
 
-Re-run the install command — the newer `SKILL.md` replaces the older in place. Pin to v1 later:
-```bash
-npx skills add https://github.com/javidrazack/url-to-app --skill "url-to-app-v1"
-```
+Re-run the install command to update the skill and its bundled references/scripts.
 
 ## Skills
 
 | Skill (folder) | Install name | Description |
 |---|---|---|
-| `url-to-app` | `url-to-app` | **Default** — URL → production React+Vite app (full 7-phase workflow) |
+| `url-to-app` | `url-to-app` | Recreate scoped pages and interactions, with documented production-build verification |
 
 Future variants (e.g., `url-to-app-v1`, `url-to-app-imagegen`) will appear here and install via `--skill`.
 
 ## Usage
 
-Just share a URL — even bare:
+Share a URL with the app or pages you want built:
 
 ```
 Build me this: https://example.com/dashboard/saas
@@ -58,19 +55,47 @@ My boss sent https://coreui.io/demos/bootstrap/4.2/dark/index.html — needs to 
 ```
 
 The skill will:
-1. **Research** the URL — grep `*.css` for `--*` tokens (both light/dark), enumerate routes, screenshot ground truth
-2. **Foundation** — strict TS, ESLint flat, Tailwind v4 `@theme inline`, `cn()` util, async ThemeProvider
-3. **Components** — 21 CVA primitives + Radix namespace imports + `Avatar{name}` + `page()` lazy helper
-4. **Pages** — parallel dispatch (exclusive files, `routes/nav.ts` SSOT, orchestrator wires `App.tsx`)
-5. **Verify** — `tsc` → `lint` → `build` → `scripts/route-sweep.mjs` (real DOM) → screenshots → bundle gate (<300 KB)
-6. **Optimize** — `React.lazy` + optional `impeccable` `optimize`/`audit` when installed
-7. **Docs** — `AGENTS.md` + `README.md` + `DESIGN.md` with binding rules
-8. **Ship** — `git init`, `.gitignore`, one commit, brand isolation grep
+1. Establish scope from the request and existing project, asking only material missing questions.
+2. Research rendered navigation, stylesheet tokens, computed styles, page anatomy, and interactions.
+3. Build the foundation and shared components, using the existing stack or a compatible React + Vite starter.
+4. Implement scoped pages, using parallel agents only when authorized and useful.
+5. Measure and optimize, then verify the final production build through preview, route checks, interactions, accessibility, and screenshots.
+6. Document implementation, token provenance, mock/service boundaries, and verification evidence.
+7. Hand off according to the user's repository and delivery instructions.
 
 ## Requirements
 
-- Node 18+, `npx` (for `npx skills add`)
-- For verification: `playwright` (route sweep) + `chrome` for screenshots
+- A Node runtime supported by the selected scaffolder and dependencies; check their current engine requirements.
+- A browser or suitable fetch tools for reference research.
+- For the bundled checker: Playwright installed in the generated app and its matching Chromium browser.
+
+## Route checker
+
+Run from the generated app directory:
+
+```bash
+npm install -D --save-exact playwright
+npx playwright install chromium
+node <skill-path>/scripts/route-sweep.mjs http://127.0.0.1:4173 qa/routes.json
+```
+
+Serve the final production build first. The checker now requires a nonempty JSON manifest, replacing the old comma-separated route argument:
+
+```json
+[
+  { "path": "/dashboard", "selector": "main[data-page='dashboard'] h1", "text": "Dashboard" }
+]
+```
+
+Choose a selector for completed route content, not the shared shell or loading fallback. See [verification.md](skills/url-to-app/references/verification.md) for redirects, authenticated sessions, status expectations, and limitations.
+
+Exit codes: `0` means every check passed; `1` means route failures; `2` means invalid input or setup failure. Route smoke checks supplement interaction and visual verification.
+
+To run the checker regression suite, use a working directory with Playwright installed and Chromium available:
+
+```bash
+node --test <skill-path>/scripts/route-sweep.test.mjs
+```
 
 ## Research
 

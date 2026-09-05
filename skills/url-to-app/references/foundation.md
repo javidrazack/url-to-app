@@ -1,107 +1,89 @@
 # Foundation recipes
 
-Copy these exactly; they encode decisions that took real debugging (TS 6 deprecations, Tailwind v4 runtime theming, React 19 ref semantics).
+Use for a new React + Vite app. In an existing project, preserve the framework and build conventions, and adapt only the relevant token/component guidance.
 
-## Scaffold
+## Runtime and dependency policy
+
+Check current [Vite requirements](https://vite.dev/guide/) and the selected packages' engine/peer requirements before installation. Use a supported Node LTS version satisfying all of them, record it in the project runtime file, and document the version tested. Do not silently upgrade an existing project's stack.
+
+Use the official scaffold to supply the entry HTML, React entrypoint, TypeScript project configs, Vite config, and linter configuration as a compatible set. Resolve the scaffolder version once and invoke that exact version:
 
 ```bash
-mkdir -p <root>/src/{lib,components/ui,theme,layout,pages,mock,routes}
-cd <root> && npm init -y
-npm install react react-dom react-router recharts class-variance-authority clsx tailwind-merge \
-  @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-tabs @radix-ui/react-tooltip \
-  @radix-ui/react-switch @radix-ui/react-checkbox @radix-ui/react-select @radix-ui/react-separator \
-  @radix-ui/react-slot @radix-ui/react-avatar lucide-react \
-  @fontsource-variable/public-sans @fontsource-variable/jetbrains-mono
-npm install -D vite @vitejs/plugin-react typescript @types/react @types/react-dom \
-  tailwindcss @tailwindcss/vite tw-animate-css eslint @eslint/js typescript-eslint \
-  eslint-plugin-react-hooks eslint-plugin-react-refresh globals
+npm view create-vite version
+# Replace <resolved-version> with that result; <root> must be a new directory.
+npm create vite@<resolved-version> <root> -- --template react-ts
+cd <root>
+npm install
+npm install --save-exact react-router class-variance-authority clsx tailwind-merge lucide-react
+npm install -D --save-exact tailwindcss @tailwindcss/vite playwright
+npm pkg set 'scripts.dev=vite' 'scripts.typecheck=tsc -b' 'scripts.build=npm run typecheck && vite build' 'scripts.preview=vite preview'
 ```
 
-Swap the font packages when the reference uses different faces (extract from Phase 1). Add heavy deps (tiptap/leaflet/dnd-kit/react-hook-form/zod) only when the scope interview says real.
+Keep `package-lock.json`, use `npm ci` for reproduction, and record resolved versions (`npm ls --depth=0`) after validation. The scaffold's existing dependency ranges are resolved by the lockfile; do not claim a fixed compatible stack before testing it. Add charts, Radix packages, fonts, and feature dependencies only as their consumers are implemented, resolving peer conflicts instead of suppressing them. Install Chromium with `npx playwright install chromium` before browser checks.
 
-## tsconfig.json (strict, TS 5.5+/6-safe)
+## Configure the starter
+
+Preserve the generated TypeScript project references and lint script/configuration (the scaffolder may choose ESLint or another linter). Explicitly enable strict checking and retain `verbatimModuleSyntax` where supported. Add these entries under `compilerOptions` in the app TypeScript config (usually `tsconfig.app.json`):
 
 ```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "paths": { "@/*": ["./src/*"] }
-  },
-  "include": ["src"]
-}
+"strict": true,
+"paths": { "@/*": ["./src/*"] }
 ```
 
-No `baseUrl` — TypeScript 6 deprecates it; relative `paths` work alone. Add `src/vite-env.d.ts` containing `/// <reference types="vite/client" />` or CSS side-effect imports fail typecheck.
-
-## vite.config.ts
+Map the same alias in `vite.config.ts`, preserving any existing options:
 
 ```ts
-import path from 'node:path'
+import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  resolve: { alias: { '@': path.resolve(import.meta.dirname, './src') } },
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
 })
 ```
 
-## eslint.config.js (flat)
+Retain Vite client types via the generated config or `src/vite-env.d.ts` (`/// <reference types="vite/client" />`). Remove demo styles/assets only when their replacements render. In the scaffold's entry CSS, replace demo styles with `@import "tailwindcss";` and the token layers below. Remove the starter App.css import if that file is removed. Keep the generated `index.html`, `src/main.tsx`, and a minimal App until the shell is ready.
 
-```js
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+## Semantic token engine
 
-export default tseslint.config(
-  { ignores: ['dist', 'node_modules'] },
-  {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: { ecmaVersion: 2022, globals: globals.browser },
-    plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      '@typescript-eslint/consistent-type-imports': 'error',
-    },
-  },
-)
+1. Define reference-derived variables on `:root`, including surface, foreground, border, primary/foreground pairs, typography, spacing, and radius. Preserve the source/theme provenance in DESIGN.md. Add theme overrides only for themes in scope.
+2. Map tokens through Tailwind's `@theme inline` when theme values reference other variables:
+
+```css
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #17212b;
+  --primary: #165dba;
+  --primary-foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+}
+
+body { margin: 0; background: var(--background); color: var(--foreground); }
 ```
 
-## Token engine (src/index.css) — the runtime-theming core
+These sample colors make the starter runnable; replace them with researched values. `inline` controls how variable references resolve; do not claim all theme switching requires it. Check the actual foreground/background pairs in each implemented theme. If using `dark:` utilities with a `.dark` toggle, explicitly configure Tailwind's selector-based dark variant according to its current docs.
 
-Three layers, in order:
+3. If density or accent switching is in scope, implement presets via `data-*` attributes on the document root and consume semantic variables. Keep numerical/tabular styling where the reference calls for it.
 
-1. **Semantic CSS variables on `:root`** (light values) and `.dark` (overrides): `--background`, `--foreground`, `--card`, `--muted`, `--muted-foreground`, `--border`, `--input`, `--divider`, status triads (`--success`, `--success-strong`, `--success-tint`, …), sidebar vars, chart palette, and density metrics (`--page-pad`, `--card-pad`, `--cell-py`, `--cell-px`). Accent presets as `[data-accent='blue'] { --primary: …; --primary-strong: …; }` blocks — every accent needs a **deep shade that passes 4.5:1 with white text** (bright brand teal at ~2.5:1 fails AA; the deep stop keeps the hue faithful).
-2. **`@theme inline`** mapping semantic vars into Tailwind utilities (`--color-background: var(--background)`). `inline` is what keeps utilities live-bound to the runtime vars — without it, theme switching silently no-ops.
-3. **Density presets** as `[data-density='compact'] { --card-pad: 16px; … }` blocks, consumed by components via `p-(--card-pad)` / `py-(--cell-py)`.
+## Theme state (only when needed)
 
-Plus: `.num`/`.amount` tabular-figure utilities, `::selection`, thin scrollbars, any signature pattern (e.g. a `.hero-grid` overlay).
+Persist supported theme choices, validate saved values, and handle unavailable storage. Apply initial document attributes before first paint where possible to avoid a theme flash; subscribe to `matchMedia` changes for system mode and clean up the subscription. CSS-variable changes avoid prop-drilling, but can still trigger style/layout/paint work and context consumer renders.
 
-## ThemeProvider (src/theme/theme-provider.tsx)
+An optional QA query override such as `?theme=dark` should be validated and temporary; do not overwrite the user's saved preference. Test only the themes/features implemented. Load licensed font packages for required weights and respect the selected family's license.
 
-Context holding `{ mode: 'light'|'dark'|'system', accent, density, rtl }`, persisted to localStorage, applied to `document.documentElement` in an effect (`.dark` class, `data-accent`, `data-density`, `dir`). `system` tracks `matchMedia('(prefers-color-scheme: dark)')` live. Export `ACCENTS` (value/label/swatch) for settings UIs, and support a QA URL override (`?theme=dark&accent=blue&density=compact`) parsed on first load — it makes automated visual sweeps of every theme combination trivial.
+## Shared utility
 
-## lib/utils.ts
+`src/lib/utils.ts`:
 
 ```ts
 import { clsx, type ClassValue } from 'clsx'
@@ -111,10 +93,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 ```
 
-## main.tsx
-
-Fontsource imports first, then `index.css`, then `ThemeProvider > BrowserRouter > App`.
-
 ## First gate
 
-`npm run build` must pass before any component work. The recurring first-build failures, all cheap: missing `vite-env.d.ts`, `baseUrl` deprecation, non-namespace Radix imports, duplicate icon exports in an icons module (skip a wrapper icons module entirely — import lucide directly).
+Run `npm run typecheck`, `npm run lint`, and `npm run build`. Confirm the starter renders before extending it. Later gates must rebuild and exercise the final production output; this first pass establishes a working foundation only.

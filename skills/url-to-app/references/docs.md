@@ -1,43 +1,25 @@
-# Documentation trio — AGENTS.md, README.md, DESIGN.md
+# Documentation and handoff
 
-Generate all three before shipping. They serve different readers: agents (AGENTS.md), developers (README.md), and design systems tooling (DESIGN.md). Skimping on AGENTS.md costs the most — it is the contract that keeps future AI contributions on-system.
+Update existing documentation where possible; for a new app, create AGENTS.md, README.md, and DESIGN.md at a depth appropriate to scope. Describe implemented behavior and measured results, not a generic feature wishlist.
 
-## AGENTS.md (the agent contract)
+## AGENTS.md — contribution contract
 
-Sections, in order:
+Include the actual stack and runtime, commands, shared component/data APIs, route registry, and import/token/layout conventions. Point to representative implementations so future agents can extend existing patterns. Explain how to add a route, including the project's loading pattern, nav visibility, concrete fixture paths, and route-manifest expectations.
 
-1. **Stack table** — framework, styling, routing, primitives, charts, forms, icons, fonts. One row each.
-2. **Commands** — dev/build/lint/typecheck with one-line purposes. Include the QA screenshot hook if theming supports it (`?theme=dark&accent=blue`).
-3. **Non-negotiable conventions** — the 8–10 rules that keep generated code on-system: `@/` alias + `import type`, semantic token classes only (never raw hex), `.num`/`.amount` on figures, sentence-case labels, radius ladder, shadow vocabulary, icon rules, page scaffold, density vars, accent-aware classes.
-4. **Component inventory** — every primitive and app-level pattern with its prop API in compact notation: `StatCard{label,value,delta:{value,direction,tone?},sub?,children?}`. Include newer additions the moment they land.
-5. **Data layer** — the mock API factory signature and the swap-to-real-endpoint story.
-6. **Reference implementations index** — a table mapping needs to exemplar files ("CRUD list → `src/pages/management/orders/list.tsx`"). This is the highest-leverage section: agents copy the closest real page instead of inventing.
-7. **Extension recipes** — "How to add a page" (must include the lazy-import + `page()` helper requirement with a never-import-statically prohibition), "How to add a primitive".
-8. **Design rules** — the binding named rules from DESIGN.md, restated in one line each.
-9. **Known exceptions** — documented slop-detector advisories and accepted lint warnings, so future runs don't "fix" intentional signatures.
+Document mock/real service boundaries, environment variable names without secret values, error handling conventions, and verification commands. Keep rules proportional and explain why they matter. Record accepted limitations separately from unresolved defects; do not turn an observed style preference into an unconditional rule for unrelated pages.
 
-Write rules with their *why* ("Radix Dialog owns focus and Escape — hand-rolled listeners double-close stacked sheets"), not as bare MUSTs.
+## README.md — human quickstart
 
-## README.md (the human quickstart)
+Include scope, prerequisites, locked install/build/preview commands, scripts, a short structure overview, and documentation links. List only implemented themes, accessibility features, interactions, and integrations. Describe real-vs-mock behavior and required service setup. Include representative screenshots under docs/ when useful, excluding private data.
 
-1. One-paragraph pitch + what's included (route count by area).
-2. Quickstart block + scripts table.
-3. Screenshots table (commit 4–6 PNGs under `docs/`: light, dark, a distinctive app, settings).
-4. Theming summary (modes, accents, densities, RTL + the QA hook).
-5. Structure tree (annotated, ≤15 lines).
-6. Documentation pointers (AGENTS.md, DESIGN.md).
-7. License stance: original implementation inspired by the reference's design language; no vendored source or assets.
+Report tested runtime/dependency versions, route coverage, final verification results, and outstanding blockers. State whether delivery is a local app or a deployed service. Document asset/font provenance and applicable licenses accurately; do not claim there are no third-party assets when licensed assets are included.
 
-## DESIGN.md (portable token spec)
+## DESIGN.md — reusable design decisions
 
-YAML frontmatter with the machine-readable layer: `colors` (descriptive slug names, not `blue-800`), `typography` roles (display/headline/title/body/label/numeric), `rounded` scale, `spacing`, `components` (≤8 props each, `{colors.x}` references). Then markdown sections in canonical order: Overview (named creative north star), Colors (with **named rules** — short, citable doctrines like "The Two-Teal Rule: white text sits only on the deep shade"), Typography, Layout, Elevation & Depth, Shapes, Components, Do's and Don'ts.
+Record semantic color/typography/spacing/radius/component tokens with reference sources, theme/selector context, and any approximations. If using machine-readable YAML frontmatter, keep a consistent schema and make references resolvable. Explain layout, hierarchy, responsive behavior, interaction states, and intentional differences from the reference. Avoid duplicate numeric sources of truth.
 
-Keep frontmatter normative; prose explains application. Don't duplicate values between frontmatter and prose.
+## Scope and branding check
 
-## Brand isolation sweep (before commit)
+Compare the result with the agreed branding and content policy. A generic starter should have neutral branding and fictional data; a branded build should retain the requested identity. Search only for known accidental placeholders or unrelated names within the generated project—do not mine other projects for a blacklist or remove ordinary domain vocabulary indiscriminately.
 
-```bash
-grep -ri "<client-project-names>\|<reference-brand>" src/ *.md package.json index.html
-```
-
-Zero hits required — including domain vocabulary from the user's other work ("payer", internal product names). Templates must read as generic. Fix leaks with neutral copy, then commit.
+Before committing, inspect the repository boundary, current status, intended diff, ignored build/dependency outputs, and potential session/secret files. Preserve existing history and unrelated changes. Follow the user's delivery/commit instructions; initialize a repository only for a new standalone project when appropriate, and never include unrelated files in an initial commit.

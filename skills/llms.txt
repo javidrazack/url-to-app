@@ -1,1 +1,1 @@
-url-to-app: Turn any dashboard URL into a production React+Vite app — tokens from CSS, shadcn primitives, parallel dispatch, verified build.
+url-to-app: Recreate scoped pages and interactions from a live URL as a working app, with reference research, shared components, documentation, and final production-build verification.
